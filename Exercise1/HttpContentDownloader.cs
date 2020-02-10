@@ -12,32 +12,34 @@ namespace Exercise1
     /// <summary>
     /// Class to Download & Print the content length
     /// </summary>
-    public class HttpContentLoader : IHttpContentLoader
+    public class HttpContentDownloader: IHttpContentDownloader
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        public HttpContentLoader(IHttpClientFactory httpClientFactory)
-        {
+        public HttpContentDownloader(IHttpClientFactory httpClientFactory) => 
             _httpClientFactory = httpClientFactory;
-        }
 
         /// <summary>
         /// This Method takes list of URLs and print the sum of content length
+        /// The cancelKey (key) to stop the download
         /// </summary>
         /// <param name="urlList"></param>
+        /// <param name="cancelKey"></param>
         /// <returns></returns>
-        public async Task PrintContentLengthAsync(IList<string> urlList)
+        public async Task PrintContentLengthAsync(IList<string> urlList, char cancelKey)
         {
             CancellationTokenSource cancelToken = new CancellationTokenSource();
-            Console.WriteLine("Press 'c' to cancel.");
-            
+
             // Run the Cancel token key task
             _ = Task.Factory.StartNew(() =>
               {
-                  if (Console.ReadKey().KeyChar == 'c')
+                  if (Console.ReadKey().KeyChar == cancelKey)
                       cancelToken.Cancel();
               });
+
+
             try
             {
+                // Concurrent queue to collect the content length
                 var contentLengthQueue = new ConcurrentQueue<long>();
                 var tasks = urlList
                     .Select(async s =>
@@ -50,13 +52,13 @@ namespace Exercise1
                 // Wait for all tasks to be completed
                 await Task.WhenAll(tasks);
 
-                // Dequeue all items 
+                // Dequeue all items from the queue
                 long totalLength = 0;
                 while (contentLengthQueue.TryDequeue(out long itemLength))
                 {
                     totalLength += itemLength;
                 }
-                Console.WriteLine($"The Length of all resources = {totalLength}");
+                Console.WriteLine($"The Length of all HTTP Contents = {totalLength}");
             }
             catch (OperationCanceledException)
             {
