@@ -12,8 +12,9 @@ Exercise 3:
 
 Coupon Manager test cases:
 
+ 
  [Test]
-        public static void Test_Constructor_Invalid()
+   public static void Test_Constructor_Invalid()
         {
             var logger = new FakeLogger();
             var couponProvider = new FakeCouponProvide();
