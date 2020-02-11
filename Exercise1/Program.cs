@@ -20,7 +20,6 @@ namespace Exercise1
             // print the content length 
             char cancelKey = 'c';
             Console.WriteLine($"Press {cancelKey} to cancel.");
-            Console.WriteLine("Downloading...");
             await contentService.PrintContentLengthAsync(GetUrls(), cancelKey);
         }
 

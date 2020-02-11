@@ -27,8 +27,15 @@ namespace Exercise1
         /// <returns></returns>
         public async Task PrintContentLengthAsync(IList<string> urlList, char cancelKey)
         {
-            CancellationTokenSource cancelToken = new CancellationTokenSource();
 
+            // This method only supports three urls as per the requirement
+            if (urlList.Count > 3)
+            {
+                Console.WriteLine("\n Invalid Input: URLs cannot be more than three.");
+                return;
+            }
+
+            var cancelToken = new CancellationTokenSource();
             // Run the Cancel token key task
             _ = Task.Factory.StartNew(() =>
               {
@@ -39,6 +46,7 @@ namespace Exercise1
 
             try
             {
+                Console.WriteLine("Downloading...");
                 // Concurrent queue to collect the content length
                 var contentLengthQueue = new ConcurrentQueue<long>();
                 var tasks = urlList
